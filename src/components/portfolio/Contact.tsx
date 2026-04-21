@@ -46,20 +46,15 @@ export function Contact() {
     }
     setErrors({});
     setSubmitting(true);
+    const form = e.currentTarget;
     try {
-      const res = await sendFn({ data: parsed.data });
-      if (res.ok) {
-        toast.success("Message sent", {
-          description: "Thanks — I'll get back to you soon.",
-        });
-        e.currentTarget.reset();
-      } else {
-        toast.error("Couldn't send message", {
-          description: res.error ?? "Please try again.",
-        });
-      }
+      await sendFn({ data: parsed.data });
+      toast.success("Message sent", {
+        description: "Thanks — I'll get back to you soon.",
+      });
+      form.reset();
     } catch {
-      toast.error("Network error", { description: "Please try again." });
+      toast.error("Couldn't send message", { description: "Please try again." });
     } finally {
       setSubmitting(false);
     }

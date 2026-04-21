@@ -45,9 +45,9 @@ export function Hero() {
 
         <aside className="rounded-lg border border-border bg-card/60 p-5 font-mono text-sm shadow-lg backdrop-blur-sm">
           <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
-            <span className="size-3 rounded-full bg-destructive/80" />
-            <span className="size-3 rounded-full bg-yellow-500/80" />
-            <span className="size-3 rounded-full bg-terminal" />
+              <span className="size-3 rounded-full bg-destructive/80" />
+              <span className="size-3 rounded-full bg-cyan-accent/70" />
+              <span className="size-3 rounded-full bg-terminal" />
             <span className="ml-2 text-xs text-muted-foreground">~/jainil/whoami</span>
           </div>
 
