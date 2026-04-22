@@ -20,6 +20,7 @@ import {
   GraduationCap,
   Pencil,
   MessageSquare,
+  Clock,
 } from "lucide-react";
 
 type Action = () => void;
@@ -94,6 +95,9 @@ export function CommandPalette() {
             </CommandItem>
             <CommandItem onSelect={() => run(scrollTo("projects"))}>
               <FolderGit2 className="size-4" /> Projects
+            </CommandItem>
+            <CommandItem onSelect={() => run(scrollTo("now"))}>
+              <Clock className="size-4" /> Now
             </CommandItem>
             <CommandItem onSelect={() => run(scrollTo("education"))}>
               <GraduationCap className="size-4" /> Education

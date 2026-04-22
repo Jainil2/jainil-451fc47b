@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -25,10 +25,24 @@ export function Contact() {
   const sendFn = useServerFn(sendContactMessage);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<"name" | "email" | "message", string>>>({});
+  const mountedAt = useRef<number>(Date.now());
+
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const honeypot = String(fd.get("website") ?? "");
+    if (honeypot) {
+      // Silently succeed for bots — don't tip them off.
+      toast.success("Message sent", {
+        description: "Thanks — I'll get back to you soon.",
+      });
+      e.currentTarget.reset();
+      return;
+    }
     const raw = {
       name: String(fd.get("name") ?? ""),
       email: String(fd.get("email") ?? ""),
@@ -48,7 +62,8 @@ export function Contact() {
     setSubmitting(true);
     const form = e.currentTarget;
     try {
-      await sendFn({ data: parsed.data });
+      const elapsedMs = Date.now() - mountedAt.current;
+      await sendFn({ data: { ...parsed.data, elapsedMs, website: "" } });
       toast.success("Message sent", {
         description: "Thanks — I'll get back to you soon.",
       });
@@ -80,6 +95,17 @@ export function Contact() {
           </p>
 
           <form onSubmit={onSubmit} noValidate className="mt-8 space-y-4">
+            {/* Honeypot field — hidden from users, visible to most bots. */}
+            <div className="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             <div>
               <label htmlFor="name" className="font-mono text-xs text-muted-foreground">
                 name
