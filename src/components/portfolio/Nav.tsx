@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, X, Download } from "lucide-react";
+import { useScrollSpy } from "@/hooks/use-scroll-spy";
 
 const links = [
   { href: "#about", label: "about" },
@@ -10,9 +11,12 @@ const links = [
   { href: "#contact", label: "contact" },
 ];
 
+const sectionIds = links.map((l) => l.href.slice(1));
+
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const active = useScrollSpy(sectionIds);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -40,9 +44,20 @@ export function Nav() {
             <li key={l.href}>
               <a
                 href={l.href}
-                className="rounded-md px-3 py-2 font-mono text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                aria-current={active === l.href.slice(1) ? "true" : undefined}
+                className={`relative rounded-md px-3 py-2 font-mono text-sm transition-colors hover:bg-secondary hover:text-foreground ${
+                  active === l.href.slice(1)
+                    ? "text-terminal"
+                    : "text-muted-foreground"
+                }`}
               >
                 {l.label}
+                {active === l.href.slice(1) && (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-3 -bottom-px h-px bg-terminal"
+                  />
+                )}
               </a>
             </li>
           ))}
