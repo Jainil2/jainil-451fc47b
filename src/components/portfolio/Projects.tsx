@@ -1,5 +1,6 @@
 import { SectionHeading } from "./SectionHeading";
 import { ArrowUpRight } from "lucide-react";
+import { Reveal } from "./Reveal";
 
 const projects = [
   {
@@ -32,11 +33,11 @@ export function Projects() {
       <SectionHeading id="projects" prompt="ls -la ./projects" title="Projects" />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {projects.map((p) => (
-          <article
-            key={p.title}
-            className="group flex flex-col rounded-lg border border-border bg-card/60 p-6 transition-all hover:border-terminal/50 hover:shadow-lg hover:shadow-terminal/5"
-          >
+        {projects.map((p, i) => (
+          <Reveal key={p.title} delay={i * 0.08}>
+            <article
+              className="group flex h-full flex-col rounded-lg border border-border bg-card/60 p-6 transition-all hover:-translate-y-0.5 hover:border-terminal/50 hover:shadow-lg hover:shadow-terminal/10"
+            >
             <div className="flex items-start justify-between gap-3">
               <h3 className="font-mono text-lg font-semibold text-foreground transition-colors group-hover:text-terminal">
                 {p.title}
@@ -66,7 +67,8 @@ export function Projects() {
                 ))}
               </ul>
             </div>
-          </article>
+            </article>
+          </Reveal>
         ))}
       </div>
     </section>
