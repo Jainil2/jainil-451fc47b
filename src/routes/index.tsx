@@ -12,6 +12,7 @@ import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
 import { SectionDivider } from "@/components/portfolio/SectionDivider";
 import { CommandPalette } from "@/components/portfolio/CommandPalette";
+import { Now } from "@/components/portfolio/Now";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -102,6 +103,8 @@ function Index() {
         <Experience />
         <SectionDivider label="projects/" />
         <Projects />
+        <SectionDivider label="now.txt" />
+        <Now />
         <SectionDivider label="education.json" />
         <Education />
         <SectionDivider label="writing/" />
