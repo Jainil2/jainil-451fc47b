@@ -72,6 +72,8 @@ const projects: Project[] = [
 ];
 
 export function Projects() {
+  const [active, setActive] = useState<Project | null>(null);
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading id="projects" prompt="ls -la ./projects" title="Projects" />
@@ -79,42 +81,120 @@ export function Projects() {
       <div className="grid gap-6 lg:grid-cols-2">
         {projects.map((p, i) => (
           <Reveal key={p.title} delay={i * 0.08}>
-            <article
-              className="group flex h-full flex-col rounded-lg border border-border bg-card/60 p-6 transition-all hover:-translate-y-0.5 hover:border-terminal/50 hover:shadow-lg hover:shadow-terminal/10"
+            <button
+              type="button"
+              onClick={() => setActive(p)}
+              aria-label={`Open details for ${p.title}`}
+              className="group flex h-full w-full flex-col rounded-lg border border-border bg-card/60 p-6 text-left transition-all hover:-translate-y-0.5 hover:border-terminal/50 hover:shadow-lg hover:shadow-terminal/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-terminal"
             >
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="font-mono text-lg font-semibold text-foreground transition-colors group-hover:text-terminal">
-                {p.title}
-              </h3>
-              <ArrowUpRight className="size-5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-terminal" />
-            </div>
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-mono text-lg font-semibold text-foreground transition-colors group-hover:text-terminal">
+                  {p.title}
+                </h3>
+                <ArrowUpRight className="size-5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-terminal" />
+              </div>
 
-            <p className="mt-3 leading-relaxed text-muted-foreground">{p.summary}</p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{p.summary}</p>
 
-            <ul className="mt-4 space-y-1.5 font-mono text-sm">
-              {p.metrics.map((m) => (
-                <li key={m} className="flex items-center gap-2 text-foreground">
-                  <span className="text-terminal">▹</span> {m}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-auto pt-5">
-              <ul className="flex flex-wrap gap-2">
-                {p.stack.map((s) => (
-                  <li
-                    key={s}
-                    className="rounded border border-border bg-secondary/50 px-2 py-1 font-mono text-xs text-cyan-accent"
-                  >
-                    {s}
+              <ul className="mt-4 space-y-1.5 font-mono text-sm">
+                {p.metrics.map((m) => (
+                  <li key={m} className="flex items-center gap-2 text-foreground">
+                    <span className="text-terminal">▹</span> {m}
                   </li>
                 ))}
               </ul>
-            </div>
-            </article>
+
+              <div className="mt-auto pt-5">
+                <ul className="flex flex-wrap gap-2">
+                  {p.stack.map((s) => (
+                    <li
+                      key={s}
+                      className="rounded border border-border bg-secondary/50 px-2 py-1 font-mono text-xs text-cyan-accent"
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 font-mono text-xs text-muted-foreground/80 group-hover:text-terminal">
+                  $ cat case-study.md →
+                </p>
+              </div>
+            </button>
           </Reveal>
         ))}
       </div>
+
+      <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-border bg-card sm:max-w-2xl">
+          {active && (
+            <>
+              <DialogHeader>
+                <p className="font-mono text-xs uppercase tracking-wider text-cyan-accent">
+                  // case-study
+                </p>
+                <DialogTitle className="font-mono text-xl text-foreground">
+                  {active.title}
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  {active.summary}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="mt-2 space-y-6">
+                <Block label="problem">
+                  <p className="leading-relaxed text-muted-foreground">{active.problem}</p>
+                </Block>
+
+                <Block label="approach">
+                  <ul className="space-y-2 font-mono text-sm">
+                    {active.approach.map((a) => (
+                      <li key={a} className="flex gap-2 text-foreground/90">
+                        <span className="text-terminal">▹</span>
+                        <span className="font-sans text-muted-foreground">{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Block>
+
+                <Block label="outcome">
+                  <ul className="space-y-2 font-mono text-sm">
+                    {active.outcome.map((o) => (
+                      <li key={o} className="flex gap-2 text-foreground">
+                        <span className="text-terminal">✓</span>
+                        <span className="font-sans">{o}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Block>
+
+                <Block label="stack">
+                  <ul className="flex flex-wrap gap-2">
+                    {active.stack.map((s) => (
+                      <li
+                        key={s}
+                        className="rounded border border-border bg-secondary/50 px-2 py-1 font-mono text-xs text-cyan-accent"
+                      >
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </Block>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
+  );
+}
+
+function Block({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="mb-2 font-mono text-xs uppercase tracking-wider text-terminal">
+        // {label}
+      </p>
+      {children}
+    </div>
   );
 }
