@@ -10,6 +10,8 @@ import { Education } from "@/components/portfolio/Education";
 import { Writing } from "@/components/portfolio/Writing";
 import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
+import { SectionDivider } from "@/components/portfolio/SectionDivider";
+import { CommandPalette } from "@/components/portfolio/CommandPalette";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -38,14 +40,22 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
+      <CommandPalette />
       <main>
         <Hero />
+        <SectionDivider label="about.md" />
         <About />
+        <SectionDivider label="skills/" />
         <Skills />
+        <SectionDivider label="git log" />
         <Experience />
+        <SectionDivider label="projects/" />
         <Projects />
+        <SectionDivider label="education.json" />
         <Education />
+        <SectionDivider label="writing/" />
         <Writing />
+        <SectionDivider label="contact --start" />
         <Contact />
       </main>
       <Footer />
