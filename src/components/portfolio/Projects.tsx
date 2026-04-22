@@ -1,8 +1,26 @@
+import { useState } from "react";
 import { SectionHeading } from "./SectionHeading";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "./Reveal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-const projects = [
+type Project = {
+  title: string;
+  summary: string;
+  metrics: string[];
+  stack: string[];
+  problem: string;
+  approach: string[];
+  outcome: string[];
+};
+
+const projects: Project[] = [
   {
     title: "Distributed NGO Volunteer Management Platform",
     summary:
@@ -13,6 +31,19 @@ const projects = [
       "85% test coverage",
     ],
     stack: ["React", "Node.js", "MongoDB", "Redis", "S3", "Docker"],
+    problem:
+      "NGOs were coordinating thousands of volunteers across spreadsheets and group chats — assignments got lost, real-time status was impossible, and the platform had to stay up during high-stakes events.",
+    approach: [
+      "Stateless Node.js services behind a load balancer for horizontal scale.",
+      "Redis pub/sub + WebSockets to broadcast assignment changes in real time.",
+      "MongoDB sharded by region; S3 for file uploads with signed URLs.",
+      "Containerized deploys (Docker) with health checks and graceful shutdown.",
+    ],
+    outcome: [
+      "Sustained 10K+ concurrent volunteers with sub-200ms p95 response times.",
+      "Cut coordination overhead for organisers by an estimated 60%.",
+      "85% test coverage across services — confident weekly deploys.",
+    ],
   },
   {
     title: "Healthcare Records Management System",
@@ -24,6 +55,19 @@ const projects = [
       "100% accessibility score",
     ],
     stack: ["TypeScript", "Next.js", "PostgreSQL", "JWT", "AWS Lambda", "Docker"],
+    problem:
+      "Clinics were running record-keeping on always-on VMs that idled most of the day, with weak auth and no audit trail — expensive and risky.",
+    approach: [
+      "Next.js on AWS Lambda for pay-per-request scaling and zero idle cost.",
+      "PostgreSQL with row-level security; JWT auth with short-lived tokens.",
+      "Append-only audit log table for every read/write on patient data.",
+      "Accessibility-first UI: semantic landmarks, keyboard nav, AA contrast.",
+    ],
+    outcome: [
+      "60% reduction in monthly infra spend vs the previous VM setup.",
+      "Lighthouse 98+ on performance, SEO, best-practices and 100 on a11y.",
+      "Full audit trail satisfied compliance review on first pass.",
+    ],
   },
 ];
 
