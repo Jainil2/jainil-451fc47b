@@ -32,6 +32,57 @@ export const Route = createFileRoute("/")({
         content:
           "Building low-latency, high-trust systems that scale quietly. Backend · auth · cloud.",
       },
+      { property: "og:image", content: "/og-image.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:url", content: "https://jainilchauhan.com/" },
+      { name: "twitter:image", content: "/og-image.png" },
+      { name: "twitter:title", content: "Jainil Chauhan — Software Engineer" },
+      {
+        name: "twitter:description",
+        content:
+          "Building low-latency, high-trust systems that scale quietly. Backend · auth · cloud.",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Jainil Chauhan",
+          url: "https://jainilchauhan.com/",
+          image: "https://jainilchauhan.com/og-image.png",
+          jobTitle: "Software Engineer",
+          description:
+            "Backend & distributed systems engineer building low-latency, high-trust systems.",
+          worksFor: { "@type": "Organization", name: "Tech Holding" },
+          alumniOf: {
+            "@type": "CollegeOrUniversity",
+            name: "Dharmsinh Desai University",
+          },
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Nadiad",
+            addressCountry: "IN",
+          },
+          sameAs: [
+            "https://github.com/jainil-chauhan",
+            "https://www.linkedin.com/in/jainil-chauhan",
+          ],
+          knowsAbout: [
+            "Distributed Systems",
+            "Backend Engineering",
+            "OAuth 2.0",
+            "OIDC",
+            "AWS",
+            "Kubernetes",
+            "GraphQL",
+            "PostgreSQL",
+            "Redis",
+          ],
+        }),
+      },
     ],
   }),
 });

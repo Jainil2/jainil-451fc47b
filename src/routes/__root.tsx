@@ -47,11 +47,7 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Jainil Chauhan" },
-      { name: "description", content: "Portfolio Powerhouse transforms your resume into a professional, high-quality personal portfolio website." },
-      { property: "og:description", content: "Portfolio Powerhouse transforms your resume into a professional, high-quality personal portfolio website." },
-      { name: "twitter:description", content: "Portfolio Powerhouse transforms your resume into a professional, high-quality personal portfolio website." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c785d758-9806-4c14-a065-8394241fcf99/id-preview-6f12cd16--8b5c5000-fb28-41ed-ab20-99a167c4a45e.lovable.app-1776763776618.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c785d758-9806-4c14-a065-8394241fcf99/id-preview-6f12cd16--8b5c5000-fb28-41ed-ab20-99a167c4a45e.lovable.app-1776763776618.png" },
+      { name: "twitter:description", content: "Backend & distributed systems engineer. Building low-latency, high-trust systems that scale quietly." },
     ],
     links: [
       {
