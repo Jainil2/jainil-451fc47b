@@ -1,6 +1,33 @@
 import { MapPin, Github, Linkedin, Mail } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+
+const bootLines = [
+  { prompt: "whoami", out: "jainil chauhan" },
+  { prompt: "role --current", out: "software engineer · backend & distributed systems" },
+  { prompt: "stack --top", out: "node · python · postgres · redis · aws · kubernetes" },
+];
+
+function useDaysSince(iso: string) {
+  return useMemo(() => {
+    const start = new Date(iso).getTime();
+    const now = Date.now();
+    return Math.max(0, Math.floor((now - start) / 86_400_000));
+  }, [iso]);
+}
 
 export function Hero() {
+  const reduce = useReducedMotion();
+  const [step, setStep] = useState(reduce ? bootLines.length : 0);
+  const days = useDaysSince("2025-01-15");
+
+  useEffect(() => {
+    if (reduce) return;
+    if (step >= bootLines.length) return;
+    const t = setTimeout(() => setStep((s) => s + 1), step === 0 ? 350 : 700);
+    return () => clearTimeout(t);
+  }, [step, reduce]);
+
   return (
     <section
       id="top"
@@ -8,10 +35,24 @@ export function Hero() {
     >
       <div className="grid items-center gap-10 lg:grid-cols-[1.5fr_1fr]">
         <div>
-          <p className="font-mono text-sm text-terminal">
-            <span className="text-muted-foreground">~/jainil $</span>{" "}
-            <span className="caret-blink">echo &quot;hello, world.&quot;</span>
-          </p>
+          <div className="font-mono text-sm" aria-label="Terminal boot sequence">
+            {bootLines.slice(0, step).map((line, i) => (
+              <motion.div
+                key={line.prompt}
+                initial={reduce ? false : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="leading-relaxed"
+              >
+                <span className="text-muted-foreground">~/jainil $</span>{" "}
+                <span className="text-terminal">{line.prompt}</span>
+                <div className="pl-[7ch] text-foreground/80">{line.out}</div>
+                {i === bootLines.length - 1 && step >= bootLines.length && (
+                  <span className="caret-blink ml-[7ch]" />
+                )}
+              </motion.div>
+            ))}
+          </div>
 
           <h1 className="mt-6 font-mono text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Jainil <span className="text-terminal">Chauhan</span>
@@ -26,6 +67,17 @@ export function Hero() {
             backend services, secure auth platforms, and cloud infrastructure that
             stay calm under load.
           </p>
+
+          <div
+            className="mt-6 inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground"
+            title="Days since I joined Tech Holding"
+          >
+            <span className="size-1.5 rounded-full bg-terminal" />
+            <span>
+              uptime: <span className="text-foreground">{days.toLocaleString()}d</span>{" "}
+              <span className="text-muted-foreground/70">@ tech holding</span>
+            </span>
+          </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <a

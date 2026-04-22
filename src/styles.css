@@ -184,3 +184,18 @@
     50% { opacity: 0; }
   }
 }
+
+/* Respect users who prefer reduced motion: kill non-essential animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .caret-blink::after {
+    animation: none;
+  }
+}
