@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { ArrowLeft, Beaker } from "lucide-react";
 import { labRegistry } from "@/lib/labRegistry";
 
@@ -23,6 +23,12 @@ export const Route = createFileRoute("/lab")({
 });
 
 function LabIndex() {
+  const { pathname } = useLocation();
+
+  if (pathname !== "/lab") {
+    return <Outlet />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
