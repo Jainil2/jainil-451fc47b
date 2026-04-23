@@ -1,6 +1,7 @@
-import { MapPin, Github, Linkedin, Mail } from "lucide-react";
+import { MapPin, Github, Linkedin, Mail, Beaker } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 
 const bootLines = [
   { prompt: "whoami", out: "jainil chauhan" },
@@ -92,7 +93,26 @@ export function Hero() {
             >
               get in touch
             </a>
+            <Link
+              to="/lab"
+              className="inline-flex items-center gap-2 rounded-md border border-cyan-accent/40 bg-cyan-accent/10 px-5 py-2.5 font-mono text-sm font-semibold text-cyan-accent transition-colors hover:bg-cyan-accent/20"
+            >
+              <Beaker className="size-4" />
+              open /lab
+            </Link>
           </div>
+
+          <p className="mt-5 font-mono text-xs text-muted-foreground">
+            <span className="text-cyan-accent">// </span>
+            this site is interactive — try{" "}
+            <kbd className="rounded border border-border bg-card/60 px-1.5 py-0.5 text-[10px] text-foreground">
+              ⌘K
+            </kbd>{" "}
+            or visit{" "}
+            <Link to="/lab" className="text-terminal hover:underline">
+              /lab
+            </Link>
+          </p>
         </div>
 
         <aside className="rounded-lg border border-border bg-card/60 p-5 font-mono text-sm shadow-lg backdrop-blur-sm">
