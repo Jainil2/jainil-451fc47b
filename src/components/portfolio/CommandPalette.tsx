@@ -21,7 +21,10 @@ import {
   Pencil,
   MessageSquare,
   Clock,
+  Cpu,
+  EyeOff,
 } from "lucide-react";
+import { useSimulationStore } from "@/lib/useSimulationStore";
 
 type Action = () => void;
 
@@ -40,10 +43,12 @@ function openLink(url: string, target: "_self" | "_blank" = "_blank"): Action {
 
 /**
  * ⌘K command palette — jump between sections, copy email, open socials.
+ * Also includes a "Disable Simulations" toggle for low-end devices.
  * Always mounted; toggled with ⌘K / Ctrl+K or Esc.
  */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const { simulationsEnabled, setSimulationsEnabled } = useSimulationStore();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -132,6 +137,31 @@ export function CommandPalette() {
               onSelect={() => run(openLink("https://www.linkedin.com/in/jainil-chauhan"))}
             >
               <Linkedin className="size-4" /> LinkedIn
+            </CommandItem>
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="Settings">
+            <CommandItem
+              onSelect={() => {
+                setSimulationsEnabled(!simulationsEnabled);
+                setOpen(false);
+              }}
+            >
+              {simulationsEnabled ? (
+                <>
+                  <EyeOff className="size-4" />
+                  Disable Simulations
+                  <span className="ml-auto font-mono text-[10px] text-terminal">ON</span>
+                </>
+              ) : (
+                <>
+                  <Cpu className="size-4" />
+                  Enable Simulations
+                  <span className="ml-auto font-mono text-[10px] text-muted-foreground">OFF</span>
+                </>
+              )}
             </CommandItem>
           </CommandGroup>
         </CommandList>

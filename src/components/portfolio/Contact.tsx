@@ -3,9 +3,12 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Github, Linkedin, Mail, Download, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { SectionHeading } from "./SectionHeading";
 import { sendContactMessage } from "@/server/contact";
+import { useTokenBucket } from "@/hooks/useTokenBucket";
+import { TokenBucket } from "@/components/system-design/TokenBucket";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
@@ -21,22 +24,34 @@ const schema = z.object({
     .max(2000, "Message is too long"),
 });
 
+const REQUIRED_TOKENS = 1;
+
 export function Contact() {
   const sendFn = useServerFn(sendContactMessage);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<"name" | "email" | "message", string>>>({});
   const mountedAt = useRef<number>(Date.now());
+  const prevLengthRef = useRef(0);
+
+  const { tokens, maxTokens, onType, canSubmit, isRateLimited } =
+    useTokenBucket(REQUIRED_TOKENS);
 
   useEffect(() => {
     mountedAt.current = Date.now();
   }, []);
+
+  function handleMessageChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    const newLength = e.target.value.length;
+    const delta = newLength - prevLengthRef.current;
+    if (delta > 0) onType(delta); // only drain on new characters
+    prevLengthRef.current = newLength;
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const honeypot = String(fd.get("website") ?? "");
     if (honeypot) {
-      // Silently succeed for bots — don't tip them off.
       toast.success("Message sent", {
         description: "Thanks — I'll get back to you soon.",
       });
@@ -68,6 +83,7 @@ export function Contact() {
         description: "Thanks — I'll get back to you soon.",
       });
       form.reset();
+      prevLengthRef.current = 0;
     } catch {
       toast.error("Couldn't send message", { description: "Please try again." });
     } finally {
@@ -143,32 +159,58 @@ export function Contact() {
               <label htmlFor="message" className="font-mono text-xs text-muted-foreground">
                 message
               </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                maxLength={2000}
-                className={inputClass}
-                placeholder="What are you building?"
-              />
+              {/* Shake animation when rate limited */}
+              <motion.div
+                animate={isRateLimited ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+              >
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={5}
+                  maxLength={2000}
+                  onChange={handleMessageChange}
+                  className={`${inputClass} ${isRateLimited ? "border-destructive/60 focus:border-destructive focus:ring-destructive" : ""}`}
+                  placeholder="What are you building?"
+                />
+              </motion.div>
               {errors.message && (
                 <p className="mt-1 font-mono text-xs text-destructive">{errors.message}</p>
               )}
+              {isRateLimited && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-1 font-mono text-xs text-destructive"
+                >
+                  429 Too Many Requests — wait for tokens to replenish.
+                </motion.p>
+              )}
             </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-md bg-terminal px-5 py-2.5 font-mono text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 hover:glow-terminal disabled:opacity-60"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" /> sending...
-                </>
-              ) : (
-                <>send message →</>
-              )}
-            </button>
+            {/* Submit row with token bucket */}
+            <div className="flex items-end gap-5">
+              <button
+                type="submit"
+                disabled={submitting || !canSubmit}
+                className="inline-flex items-center gap-2 rounded-md bg-terminal px-5 py-2.5 font-mono text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 hover:glow-terminal disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" /> sending...
+                  </>
+                ) : (
+                  <>send message →</>
+                )}
+              </button>
+
+              {/* Token bucket visualizer */}
+              <TokenBucket
+                tokens={tokens}
+                maxTokens={maxTokens}
+                isRateLimited={isRateLimited}
+              />
+            </div>
           </form>
         </div>
 

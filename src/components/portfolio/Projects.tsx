@@ -9,8 +9,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ConsistentHashRing } from "@/components/system-design/ConsistentHashRing";
+import { useSimulationStore } from "@/lib/useSimulationStore";
 
 type Project = {
+  id: string;
   title: string;
   summary: string;
   metrics: string[];
@@ -22,6 +25,7 @@ type Project = {
 
 const projects: Project[] = [
   {
+    id: "ngo-platform",
     title: "Distributed NGO Volunteer Management Platform",
     summary:
       "Real-time coordination platform that scales to thousands of concurrent volunteers without breaking a sweat.",
@@ -46,6 +50,7 @@ const projects: Project[] = [
     ],
   },
   {
+    id: "healthcare-records",
     title: "Healthcare Records Management System",
     summary:
       "Serverless, accessible-first platform for managing patient records with strong auth and audit trails.",
@@ -69,59 +74,102 @@ const projects: Project[] = [
       "Full audit trail satisfied compliance review on first pass.",
     ],
   },
+  {
+    id: "cloud-cost-optimizer",
+    title: "Cloud Cost Optimization Platform",
+    summary:
+      "Anomaly detection, rightsizing recommendations, and security posture monitoring across multi-account AWS setups.",
+    metrics: [
+      "Multi-account AWS monitoring",
+      "Real-time anomaly alerts",
+      "Security posture scoring",
+    ],
+    stack: ["Python", "AWS SDK", "PostgreSQL", "Redis", "React", "Grafana"],
+    problem:
+      "Engineering teams had no visibility into runaway AWS spend, misconfigured resources, or drifting security posture across accounts.",
+    approach: [
+      "AWS Cost Explorer + CloudWatch integration for spend signal collection.",
+      "Z-score anomaly detection to flag spend spikes within minutes.",
+      "Rightsizing engine comparing actual utilization vs provisioned capacity.",
+      "CIS Benchmark checks mapped to live resource configs.",
+    ],
+    outcome: [
+      "15–30% average monthly savings identified per account audited.",
+      "Security findings surfaced before quarterly review cycles.",
+      "Teams adopted a cost-aware engineering culture with weekly digests.",
+    ],
+  },
 ];
 
 export function Projects() {
   const [active, setActive] = useState<Project | null>(null);
+  const { simulationsEnabled } = useSimulationStore();
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading id="projects" prompt="ls -la ./projects" title="Projects" />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {projects.map((p, i) => (
-          <Reveal key={p.title} delay={i * 0.08}>
-            <button
-              type="button"
-              onClick={() => setActive(p)}
-              aria-label={`Open details for ${p.title}`}
-              className="group flex h-full w-full flex-col rounded-lg border border-border bg-card/60 p-6 text-left transition-all hover:-translate-y-0.5 hover:border-terminal/50 hover:shadow-lg hover:shadow-terminal/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-terminal"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-mono text-lg font-semibold text-foreground transition-colors group-hover:text-terminal">
-                  {p.title}
-                </h3>
-                <ArrowUpRight className="size-5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-terminal" />
-              </div>
+      <div className="grid gap-8 lg:grid-cols-[1fr_260px]">
+        {/* Project cards */}
+        <div className="grid gap-6 sm:grid-cols-1">
+          {projects.map((p, i) => (
+            <Reveal key={p.id} delay={i * 0.08}>
+              <button
+                type="button"
+                onClick={() => setActive(p)}
+                aria-label={`Open details for ${p.title}`}
+                className="group flex h-full w-full flex-col rounded-lg border border-border bg-card/60 p-6 text-left transition-all hover:-translate-y-0.5 hover:border-terminal/50 hover:shadow-lg hover:shadow-terminal/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-terminal"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-mono text-lg font-semibold text-foreground transition-colors group-hover:text-terminal">
+                    {p.title}
+                  </h3>
+                  <ArrowUpRight className="size-5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-terminal" />
+                </div>
 
-              <p className="mt-3 leading-relaxed text-muted-foreground">{p.summary}</p>
+                <p className="mt-3 leading-relaxed text-muted-foreground">{p.summary}</p>
 
-              <ul className="mt-4 space-y-1.5 font-mono text-sm">
-                {p.metrics.map((m) => (
-                  <li key={m} className="flex items-center gap-2 text-foreground">
-                    <span className="text-terminal">▹</span> {m}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-auto pt-5">
-                <ul className="flex flex-wrap gap-2">
-                  {p.stack.map((s) => (
-                    <li
-                      key={s}
-                      className="rounded border border-border bg-secondary/50 px-2 py-1 font-mono text-xs text-cyan-accent"
-                    >
-                      {s}
+                <ul className="mt-4 space-y-1.5 font-mono text-sm">
+                  {p.metrics.map((m) => (
+                    <li key={m} className="flex items-center gap-2 text-foreground">
+                      <span className="text-terminal">▹</span> {m}
                     </li>
                   ))}
                 </ul>
-                <p className="mt-4 font-mono text-xs text-muted-foreground/80 group-hover:text-terminal">
-                  $ cat case-study.md →
-                </p>
-              </div>
-            </button>
+
+                <div className="mt-auto pt-5">
+                  <ul className="flex flex-wrap gap-2">
+                    {p.stack.map((s) => (
+                      <li
+                        key={s}
+                        className="rounded border border-border bg-secondary/50 px-2 py-1 font-mono text-xs text-cyan-accent"
+                      >
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 font-mono text-xs text-muted-foreground/80 group-hover:text-terminal">
+                    $ cat case-study.md →
+                  </p>
+                </div>
+              </button>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* Consistent Hash Ring sidebar */}
+        {simulationsEnabled && (
+          <Reveal delay={0.2}>
+            <aside className="sticky top-24 rounded-lg border border-border bg-card/60 p-4">
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-cyan-accent">
+                // load balancer · consistent hashing
+              </p>
+              <ConsistentHashRing
+                projects={projects.map((p) => ({ id: p.id, title: p.title }))}
+              />
+            </aside>
           </Reveal>
-        ))}
+        )}
       </div>
 
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
