@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   CommandDialog,
   CommandEmpty,
@@ -23,8 +24,10 @@ import {
   Clock,
   Cpu,
   EyeOff,
+  Beaker,
 } from "lucide-react";
 import { useSimulationStore } from "@/lib/useSimulationStore";
+import { labRegistry } from "@/lib/labRegistry";
 
 type Action = () => void;
 
@@ -49,6 +52,7 @@ function openLink(url: string, target: "_self" | "_blank" = "_blank"): Action {
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const { simulationsEnabled, setSimulationsEnabled } = useSimulationStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -113,6 +117,31 @@ export function CommandPalette() {
             <CommandItem onSelect={() => run(scrollTo("contact"))}>
               <MessageSquare className="size-4" /> Contact
             </CommandItem>
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="Labs">
+            <CommandItem
+              onSelect={() =>
+                run(() => navigate({ to: "/lab" }))
+              }
+            >
+              <Beaker className="size-4" /> Open Lab index
+            </CommandItem>
+            {labRegistry.map((lab) => (
+              <CommandItem
+                key={lab.slug}
+                onSelect={() =>
+                  run(() => navigate({ to: "/lab/$slug", params: { slug: lab.slug } }))
+                }
+              >
+                <Beaker className="size-4" /> {lab.title}
+                <span className="ml-auto font-mono text-[10px] text-muted-foreground">
+                  {lab.category}
+                </span>
+              </CommandItem>
+            ))}
           </CommandGroup>
 
           <CommandSeparator />

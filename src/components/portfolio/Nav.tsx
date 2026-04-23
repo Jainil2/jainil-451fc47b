@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, X, Download } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
 
 const links = [
@@ -63,6 +64,14 @@ export function Nav() {
             </li>
           ))}
           <li>
+            <Link
+              to="/lab"
+              className="rounded-md px-3 py-2 font-mono text-sm text-cyan-accent transition-colors hover:bg-secondary"
+            >
+              lab
+            </Link>
+          </li>
+          <li>
             <a
               href="/jainil-chauhan-resume.pdf"
               download
@@ -98,6 +107,15 @@ export function Nav() {
                 </a>
               </li>
             ))}
+            <li>
+              <Link
+                to="/lab"
+                onClick={() => setOpen(false)}
+                className="block rounded-md px-3 py-2 font-mono text-sm text-cyan-accent hover:bg-secondary"
+              >
+                lab
+              </Link>
+            </li>
             <li>
               <a
                 href="/jainil-chauhan-resume.pdf"
