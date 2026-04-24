@@ -11,6 +11,22 @@ const __dirname = dirname(__filename);
 const repoRoot = resolve(__dirname, "..");
 const publicDir = join(repoRoot, "public");
 
+function parsePhase(argv) {
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg.startsWith("--phase=")) {
+      const value = arg.slice("--phase=".length);
+      if (value === "pre" || value === "post") return value;
+    }
+    if (arg === "--phase" && i + 1 < argv.length) {
+      const value = argv[i + 1];
+      if (value === "pre" || value === "post") return value;
+      i += 1;
+    }
+  }
+  return "post";
+}
+
 function safeExec(cmd) {
   try {
     return execSync(cmd, { cwd: repoRoot, stdio: ["ignore", "pipe", "ignore"] })
@@ -50,16 +66,17 @@ function bundleKb() {
 }
 
 function main() {
+  const phase = parsePhase(process.argv);
   if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
   const status = {
     commit: commitSha(),
     builtAt: new Date().toISOString(),
-    bundleKb: bundleKb(),
+    bundleKb: phase === "post" ? bundleKb() : null,
     tests: null,
   };
   const out = join(publicDir, "status.json");
   writeFileSync(out, JSON.stringify(status, null, 2) + "\n", "utf8");
-  console.log(`[status] wrote ${out}:`, status);
+  console.log(`[status:${phase}] wrote ${out}:`, status);
 }
 
 main();

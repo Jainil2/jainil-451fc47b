@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Github,
@@ -337,19 +337,24 @@ function shortSha(commit: string): string {
 
 /** Throttles tokens-per-second derivation to 4 Hz; also pushes samples into the control-plane. */
 function useTokenRate(tokens: number, setTps: (n: number) => void, pushTps: (n: number) => void) {
-  const [last, setLast] = useState({ t: tokens, time: Date.now() });
+  const tokensRef = useRef(tokens);
+  const lastRef = useRef({ t: tokens, time: Date.now() });
+  tokensRef.current = tokens;
+
   useEffect(() => {
     const id = setInterval(() => {
       const now = Date.now();
+      const last = lastRef.current;
       const dt = (now - last.time) / 1000;
       if (dt > 0) {
-        const delta = Math.max(0, last.t - tokens);
+        const currentTokens = tokensRef.current;
+        const delta = Math.max(0, last.t - currentTokens);
         const rate = delta / dt;
         setTps(rate);
         pushTps(rate);
+        lastRef.current = { t: currentTokens, time: now };
       }
-      setLast({ t: tokens, time: now });
     }, 250);
     return () => clearInterval(id);
-  }, [tokens, last, setTps, pushTps]);
+  }, [setTps, pushTps]);
 }

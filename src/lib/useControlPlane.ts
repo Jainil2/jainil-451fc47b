@@ -62,7 +62,7 @@ function loadInitialEnv(): EnvMode {
 }
 
 export const useControlPlane = create<ControlPlaneState>((set) => ({
-  env: loadInitialEnv(),
+  env: "prod",
   setEnv: (e) => {
     try {
       if (typeof window !== "undefined") {
@@ -117,10 +117,10 @@ export const useControlPlane = create<ControlPlaneState>((set) => ({
 /** Hydrates window-scoped state that zustand can't read during SSR. */
 export function useHydrateControlPlane() {
   const setEnv = useControlPlane((s) => s.setEnv);
-  const env = useControlPlane((s) => s.env);
   useEffect(() => {
     const initial = loadInitialEnv();
-    if (initial !== env) setEnv(initial);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (initial !== useControlPlane.getState().env) {
+      setEnv(initial);
+    }
+  }, [setEnv]);
 }

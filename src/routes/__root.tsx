@@ -5,6 +5,7 @@ import { TerminalShell } from "@/components/portfolio/TerminalShell";
 import { ChaosOverlay } from "@/components/portfolio/ChaosOverlay";
 import { useWebVitals } from "@/lib/useWebVitals";
 import { useBuildStatus } from "@/lib/useBuildStatus";
+import { useHydrateControlPlane } from "@/lib/useControlPlane";
 
 import appCss from "../styles.css?url";
 
@@ -86,6 +87,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useHydrateControlPlane();
   useWebVitals();
   useBuildStatus();
   return (
