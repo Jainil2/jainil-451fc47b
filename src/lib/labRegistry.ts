@@ -4,11 +4,12 @@ import { LRUCache } from "@/components/system-design/LRUCache";
 import { RaftCluster } from "@/components/system-design/RaftCluster";
 import { SortingRace } from "@/components/system-design/SortingRace";
 import { DijkstraGrid } from "@/components/system-design/DijkstraGrid";
+import { OIDCFlow } from "@/components/system-design/OIDCFlow";
 
 export interface LabEntry {
   slug: string;
   title: string;
-  category: "Distributed Systems" | "Data Structures" | "Algorithms";
+  category: "Distributed Systems" | "Data Structures" | "Algorithms" | "Security";
   blurb: string;
   caption: string;
   whereUsed?: { label: string; href: string };
@@ -70,6 +71,17 @@ export const labRegistry: LabEntry[] = [
       "Click cells to drop walls. Run Dijkstra and watch the visited frontier expand before the shortest path lights up.",
     component: DijkstraGrid,
     skillTags: ["DSA"],
+  },
+  {
+    slug: "oidc-flow",
+    title: "OAuth 2.0 / OIDC Flow",
+    category: "Security",
+    blurb: "Authz-code + PKCE, replay attack, tampered verifier — step by step.",
+    caption:
+      "Animate the OIDC dance between a browser, client app, authz server (Ory Hydra-style), and resource server. Swap scenarios to see why PKCE matters and how a replayed code gets rejected.",
+    whereUsed: { label: "Auth stack at Tech Holding", href: "/#experience" },
+    component: OIDCFlow,
+    skillTags: ["Security", "System Design"],
   },
 ];
 

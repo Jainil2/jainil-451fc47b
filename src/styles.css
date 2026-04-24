@@ -185,6 +185,18 @@
   }
 }
 
+/* Chaos env: subtle destabilizing filter. No-op in prod/staging. */
+@keyframes env-chaos-jitter {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  25%     { transform: translate3d(-0.2px, 0.1px, 0); }
+  50%     { transform: translate3d(0.1px, -0.3px, 0); }
+  75%     { transform: translate3d(0.3px, 0.2px, 0); }
+}
+.env-chaos body {
+  animation: env-chaos-jitter 2.5s ease-in-out infinite;
+  filter: contrast(1.02) saturate(1.05);
+}
+
 /* Respect users who prefer reduced motion: kill non-essential animations. */
 @media (prefers-reduced-motion: reduce) {
   *,
