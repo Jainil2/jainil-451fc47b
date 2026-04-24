@@ -25,9 +25,12 @@ import {
   Cpu,
   EyeOff,
   Beaker,
+  TerminalSquare,
+  Activity,
 } from "lucide-react";
 import { useSimulationStore } from "@/lib/useSimulationStore";
 import { labRegistry } from "@/lib/labRegistry";
+import { useControlPlane, type EnvMode } from "@/lib/useControlPlane";
 
 type Action = () => void;
 
@@ -52,6 +55,8 @@ function openLink(url: string, target: "_self" | "_blank" = "_blank"): Action {
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const { simulationsEnabled, setSimulationsEnabled } = useSimulationStore();
+  const env = useControlPlane((s) => s.env);
+  const setEnv = useControlPlane((s) => s.setEnv);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -122,11 +127,7 @@ export function CommandPalette() {
           <CommandSeparator />
 
           <CommandGroup heading="Labs">
-            <CommandItem
-              onSelect={() =>
-                run(() => navigate({ to: "/lab" }))
-              }
-            >
+            <CommandItem onSelect={() => run(() => navigate({ to: "/lab" }))}>
               <Beaker className="size-4" /> Open Lab index
             </CommandItem>
             {labRegistry.map((lab) => (
@@ -146,10 +147,38 @@ export function CommandPalette() {
 
           <CommandSeparator />
 
-          <CommandGroup heading="Quick actions">
+          <CommandGroup heading="Shell & environment">
             <CommandItem
-              onSelect={() => run(openLink("/jainil-chauhan-resume.pdf", "_self"))}
+              onSelect={() => {
+                setOpen(false);
+                // TerminalShell listens for this global event.
+                requestAnimationFrame(() =>
+                  window.dispatchEvent(new KeyboardEvent("keydown", { key: "j", metaKey: true })),
+                );
+              }}
             >
+              <TerminalSquare className="size-4" /> Open shell (⌘J)
+            </CommandItem>
+            {(["prod", "staging", "chaos"] as EnvMode[]).map((mode) => (
+              <CommandItem
+                key={mode}
+                onSelect={() => {
+                  setEnv(mode);
+                  setOpen(false);
+                }}
+              >
+                <Activity className="size-4" /> env: {mode}
+                <span className="ml-auto font-mono text-[10px] text-muted-foreground">
+                  {env === mode ? "ACTIVE" : "switch"}
+                </span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="Quick actions">
+            <CommandItem onSelect={() => run(openLink("/jainil-chauhan-resume.pdf", "_self"))}>
               <Download className="size-4" /> Download resume.pdf
             </CommandItem>
             <CommandItem
@@ -157,9 +186,7 @@ export function CommandPalette() {
             >
               <Mail className="size-4" /> Email me
             </CommandItem>
-            <CommandItem
-              onSelect={() => run(openLink("https://github.com/jainil-chauhan"))}
-            >
+            <CommandItem onSelect={() => run(openLink("https://github.com/jainil-chauhan"))}>
               <Github className="size-4" /> GitHub
             </CommandItem>
             <CommandItem

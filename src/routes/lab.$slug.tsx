@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { getLabBySlug, labRegistry } from "@/lib/labRegistry";
 import { GameCard } from "@/components/system-design/GameCard";
+import { useLabProgress } from "@/lib/useLabProgress";
 
 export const Route = createFileRoute("/lab/$slug")({
   loader: ({ params }) => {
@@ -51,6 +53,27 @@ function LabDetail() {
   const { slug } = Route.useParams();
   const lab = labRegistry.find((l) => l.slug === slug)!;
   const Game = lab.component;
+  const { markCompleted } = useLabProgress();
+
+  useEffect(() => {
+    // Mark as completed on first meaningful interaction with the lab surface.
+    // (Any pointerdown / keydown counts; labs that want stricter criteria can
+    //  accept an onMeaningfulInteraction prop — see OIDCFlow.)
+    let done = false;
+    const hit = () => {
+      if (done) return;
+      done = true;
+      markCompleted(slug);
+    };
+    const el = document.getElementById("lab-surface");
+    el?.addEventListener("pointerdown", hit);
+    el?.addEventListener("keydown", hit);
+    return () => {
+      el?.removeEventListener("pointerdown", hit);
+      el?.removeEventListener("keydown", hit);
+    };
+  }, [slug, markCompleted]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
@@ -70,13 +93,11 @@ function LabDetail() {
           <p className="mt-2 text-muted-foreground">{lab.blurb}</p>
         </div>
 
-        <GameCard
-          title={lab.title}
-          caption={lab.caption}
-          whereUsed={lab.whereUsed}
-        >
-          <Game />
-        </GameCard>
+        <div id="lab-surface">
+          <GameCard title={lab.title} caption={lab.caption} whereUsed={lab.whereUsed}>
+            <Game />
+          </GameCard>
+        </div>
       </div>
     </div>
   );

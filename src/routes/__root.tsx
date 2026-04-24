@@ -1,6 +1,10 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import { PortfolioHUD } from "@/components/portfolio/PortfolioHUD";
+import { TerminalShell } from "@/components/portfolio/TerminalShell";
+import { ChaosOverlay } from "@/components/portfolio/ChaosOverlay";
+import { useWebVitals } from "@/lib/useWebVitals";
+import { useBuildStatus } from "@/lib/useBuildStatus";
 
 import appCss from "../styles.css?url";
 
@@ -48,7 +52,11 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Jainil Chauhan" },
-      { name: "twitter:description", content: "Backend & distributed systems engineer. Building low-latency, high-trust systems that scale quietly." },
+      {
+        name: "twitter:description",
+        content:
+          "Backend & distributed systems engineer. Building low-latency, high-trust systems that scale quietly.",
+      },
     ],
     links: [
       {
@@ -78,10 +86,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useWebVitals();
+  useBuildStatus();
   return (
     <>
       <Outlet />
       <PortfolioHUD />
+      <TerminalShell />
+      <ChaosOverlay />
     </>
   );
 }
